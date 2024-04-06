@@ -50,18 +50,16 @@ export class Ship extends GameObject {
     hit: boolean = false
     destroyAnimation = 0
     bullets: GameObject[] = []
-    explodeSprite: HTMLImageElement
     bulletSpriteLink: string | undefined
     bulletSoundPath: string | undefined
     collusionSoundPath: string | undefined
     health: number = 3
 
-    constructor(x: number, y: number, spriteLink: string, objectType: ObjectType, targets: ObjectType[], explodeSprite: string, bulletSoundPath?: string, collusionSoundPath?: string, bulletSpriteLink?: string) {
+    constructor(x: number, y: number, spriteLink: string, objectType: ObjectType, targets: ObjectType[], bulletSoundPath?: string, collusionSoundPath?: string, bulletSpriteLink?: string) {
         super(x, y, spriteLink, objectType, targets)
         this.bulletSoundPath = bulletSoundPath
         this.collusionSoundPath = collusionSoundPath
         this.bulletSpriteLink = bulletSpriteLink
-        this.explodeSprite = this.setSprite(explodeSprite)
     }
 
     addBullet = () => {
@@ -94,7 +92,7 @@ export class Ship extends GameObject {
         if (!this.checkBounds({top: 0, bottom: canvas.height})) this.playCollusionSound()
     }
 
-    resetObject = (canvas: HTMLCanvasElement) => {
+    resetObject = (_canvas: HTMLCanvasElement) => {
         this.collided = false
         this.health--
     }
@@ -126,8 +124,8 @@ export class Ship extends GameObject {
 export class EnemyShip extends Ship {
     weaponCoolDownTime = getRandom(30,80)
     weaponsActivated = false
-    constructor(x: number, y: number, spriteLink: string, objectType: ObjectType, targets: ObjectType[], explodeSprite: string, bulletSoundPath?: string, collusionSoundPath?: string, bulletSpriteLink?: string, weaponsActivated?: boolean) {
-        super(x, y, spriteLink, objectType, targets, explodeSprite, bulletSoundPath, collusionSoundPath, bulletSpriteLink)
+    constructor(x: number, y: number, spriteLink: string, objectType: ObjectType, targets: ObjectType[], bulletSoundPath?: string, collusionSoundPath?: string, bulletSpriteLink?: string, weaponsActivated?: boolean) {
+        super(x, y, spriteLink, objectType, targets, bulletSoundPath, collusionSoundPath, bulletSpriteLink)
         this.weaponsActivated = weaponsActivated || false
     }
 

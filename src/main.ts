@@ -1,12 +1,11 @@
-import { Bullet, EnemyShip, Ship } from './ship'
+import { EnemyShip, Ship } from './ship'
 import './style.css'
 import { GAMEOVER_MSG, NUMBER_OF_ENEMIES, PLAYER_BULLET_SRC, updateCollusion, getRandomWindowPosition, getShipSpriteLink, DEFAULT_GAME_STATE, GameState, getRandom, toggleMenuVisibility, drawMessage, visibility } from './utils'
-import HEART from '../public/heart.png'
-import SHIP_DESTROY from '../public/explosion-6055.mp3'
-import BULLET_SOUND from '../public/bullet_1_sound.wav'
-import EXPLODE from '../public/explode.png'
-import MECH_KEYBOARD_SOUND from '../public/mech-keyboard-02-102918.mp3'
-import BACKGROUND_TRACK from '../public/stardust-danijel-zambo-main-version-03-13-1372 (1).mp3'
+import HEART from '../public/sprites/heart.png'
+import SHIP_DESTROY from '../public/sounds/explosion-6055.mp3'
+import BULLET_SOUND from '../public/sounds/bullet_1_sound.wav'
+import MECH_KEYBOARD_SOUND from '../public/sounds/mech-keyboard-02-102918.mp3'
+import BACKGROUND_TRACK from '../public/sounds/stardust-danijel-zambo-main-version-03-13-1372.mp3'
 
 // array to record high scores
 let scores: {
@@ -46,7 +45,7 @@ let enemies: EnemyShip[] = []
 let player: Ship
 
 const initializePlayer = () => {
-  player = new Ship(canvas.width / 2, canvas.height*0.9, getShipSpriteLink(0), 'player', ['enemy', 'enemy_bullet'], EXPLODE, BULLET_SOUND, SHIP_DESTROY, PLAYER_BULLET_SRC)
+  player = new Ship(canvas.width / 2, canvas.height*0.9, getShipSpriteLink(0), 'player', ['enemy', 'enemy_bullet'], BULLET_SOUND, SHIP_DESTROY, PLAYER_BULLET_SRC)
 }
 
 const initailizeGame = () => {
@@ -110,7 +109,7 @@ const setUpGameEvents = () => {
   })
 
   // play mech sound when score input is changed
-  document.querySelector('#score-input')?.addEventListener('input', (e) => {
+  document.querySelector('#score-input')?.addEventListener('input', () => {
     if (!gameState.gameInSession && gameState.gameOver) {
       mechSound.load()
       mechSound.play()
@@ -147,7 +146,7 @@ const initializeEmemyShips = (amount: number) => {
   for (let i = 0; i < amount; i++) {
     const { x, y } = getRandomWindowPosition(canvas)
     const enemySpriteIndex = getRandom(1, 5)
-    enemies.push(new EnemyShip(x, y, getShipSpriteLink(enemySpriteIndex), 'enemy', ['player', 'player_bullet'], EXPLODE, BULLET_SOUND, SHIP_DESTROY, PLAYER_BULLET_SRC, enemySpriteIndex === 4))
+    enemies.push(new EnemyShip(x, y, getShipSpriteLink(enemySpriteIndex), 'enemy', ['player', 'player_bullet'], BULLET_SOUND, SHIP_DESTROY, PLAYER_BULLET_SRC, enemySpriteIndex === 4))
   }
 }
 

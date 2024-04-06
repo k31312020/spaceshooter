@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="/ship_0.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spaceshooter</title>
+  <script type="module" crossorigin src="/assets/index-BCQ-JEpO.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-CFHTugqs.css">
+</head>
+
+<body>
+  <div id="app" class="main">
+    <div class="game-menu menu">
+      <div>
+        <p class="menu-arrow">></p>
+        <p class="menu-arrow"></p>
+        <p class="menu-arrow"></p>
+      </div>
+      <div>
+        <p class="menu-item">Start</p>
+        <p class="menu-item">Leaderboard</p>
+        <p class="menu-item">Credits</p>
+      </div>
+    </div>
+    <div class="leaderboard menu">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+      </table>
+      <p>Press 'Escape' to go back</p>
+    </div>
+    <div class="credits menu">
+      <h3>Created by: Kuenzang</h3>
+      <p>Built using the power of vanilla typescript and the HTML canvas API using vite
+        <p />
+      <h3>Sprites</h3>
+      <p>Generated using DallE</p>
+      <h4>Prompt used: </h4>
+      <p>generate 2D sprites for diferent ships but I only want top view</p>
+      <img src="./public/main_sprite.jpeg" />
+      <h3>Sounds and Background track</h3>
+      <ul>
+        <li>
+          Music from #Uppbeat (free for Creators!):
+          <a href="https://uppbeat.io/t/danijel-zambo/stardust">Track name: stardust</a>
+          License code: YLGRRYNVCOBYBNA1
+          <p>
+            <audio controls>
+              <source src="./public/stardust-danijel-zambo-main-version-03-13-1372 (1).mp3" type="audio/mp3">
+              !audio format not supported by your browser
+            </audio>
+          </p>
+        </li>
+        <li>
+          <a
+            href="https://pixabay.com/sound-effects/laser-gun-shot-sound-future-sci-fi-lazer-wobble-chakongaudio-174883/">Sound
+            name: Laser gun shot sound</a>
+          <p>
+            <audio controls>
+              <source src="./public/bullet_1_sound.wav" type="audio/wav">
+              !audio format not supported by your browser
+            </audio>
+          </p>
+        </li>
+        <li>
+          <a href="https://pixabay.com/sound-effects/mech-keyboard-02-102918/">Sound name: Mech-keyboard-02</a>
+          <p>
+            <audio controls>
+              <source src="./public/mech-keyboard-02-102918.mp3" type="audio/mp3">
+              !audio format not supported by your browser
+            </audio>
+          </p>
+        </li>
+        <li>
+          <a href="https://pixabay.com/sound-effects/explosion-6055/">Sound name: Explosion-6055</a>
+          <p>
+            <audio controls>
+              <source src="./public/explosion-6055.mp3" type="audio/mp3">
+              !audio format not supported by your browser
+            </audio>
+          </p>
+        </li>
+      </ul>
+      <p>Press 'Escape' to go back</p>
+    </div>
+    <div class="score-input menu">
+      <p>Enter your name</p>
+      <div>
+        <input id="score-input" autocomplete="off" maxlength="4" autofocus />
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
