@@ -6,8 +6,6 @@ export const MAX_HEALTH = 3
 
 export const GAMEOVER_MSG = "GAMEOVER"
 
-export const PLAYER_BULLET_SRC = "../public/bullet_1.png"
-
 export type ObjectType = 'player' | 'enemy' | 'player_bullet' | 'enemy_bullet' | null
 export interface Boundary {
     top: number
@@ -58,7 +56,7 @@ export const getRandomWindowPosition = (canvas: HTMLCanvasElement): { x: number,
 }
 
 export const getShipSpriteLink = (shipIndex: number) => {
-    return `../public/ship_${shipIndex}.png`
+    return `./sprites/ship_${shipIndex}.png`
 }
 
 export const checkBounds = (gameObject: GameObject, bounds: Boundary) => {
