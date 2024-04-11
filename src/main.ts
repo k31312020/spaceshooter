@@ -1,11 +1,12 @@
 import { EnemyShip, Ship } from './ship'
 import './style.css'
-import { GAMEOVER_MSG, NUMBER_OF_ENEMIES, PLAYER_BULLET_SRC, updateCollusion, getRandomWindowPosition, getShipSpriteLink, DEFAULT_GAME_STATE, GameState, getRandom, toggleMenuVisibility, drawMessage, visibility } from './utils'
-import HEART from '../public/sprites/heart.png'
-import SHIP_DESTROY from '../public/sounds/explosion-6055.mp3'
-import BULLET_SOUND from '../public/sounds/bullet_1_sound.wav'
-import MECH_KEYBOARD_SOUND from '../public/sounds/mech-keyboard-02-102918.mp3'
-import BACKGROUND_TRACK from '../public/sounds/stardust-danijel-zambo-main-version-03-13-1372.mp3'
+import { GAMEOVER_MSG, NUMBER_OF_ENEMIES, updateCollusion, getRandomWindowPosition, getShipSpriteLink, DEFAULT_GAME_STATE, GameState, getRandom, toggleMenuVisibility, drawMessage, visibility } from './utils'
+import HEART from '/sprites/heart.png'
+import PLAYER_BULLET_SRC from '/sprites/bullet_1.png'
+import SHIP_DESTROY from '/sounds/explosion-6055.mp3'
+import BULLET_SOUND from '/sounds/bullet_1_sound.wav'
+import MECH_KEYBOARD_SOUND from '/sounds/mech-keyboard-02-102918.mp3'
+import BACKGROUND_TRACK from '/sounds/stardust-danijel-zambo-main-version-03-13-1372.mp3'
 
 // array to record high scores
 let scores: {
