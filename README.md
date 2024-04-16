@@ -1,4 +1,4 @@
-# A typescript 2D spaceshooter built using vite and the canvas API
+# A 2D spaceshooter built using vite, typescript and the canvas API
 ## Live demo deployed at
 <a href="https://spaceshooter.kuenzang.xyz">spaceshooter.kuenzang.xyz</a>
 

@@ -120,7 +120,7 @@ const setUpGameEvents = () => {
   document.addEventListener('contextmenu', event => event.preventDefault());
   // update player x position when mouse moves
   canvas.addEventListener('mousemove', (event) => {
-    if (gameState.gameInSession) player.setPosition({ x: event.clientX, y: player.y })
+    if (gameState.gameInSession) player.setPosition({ x: event.clientX, y: event.clientY })
   })
   // allow the player to shoot on left click
   canvas.addEventListener('click', () => {
@@ -268,6 +268,7 @@ const drawPausedMsg = () => {
 
 const showScoreInput = () => {
   toggleMenuVisibility('.score-input', 'block');
+  (document.querySelector('#score-input') as HTMLInputElement).value = '';
   (document.querySelector('#score-input') as HTMLElement).focus()
 }
 
