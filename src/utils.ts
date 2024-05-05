@@ -6,10 +6,20 @@ export const MAX_HEALTH = 3
 
 export const GAMEOVER_MSG = "GAMEOVER"
 
-export type ObjectType = 'player' | 'enemy' | 'player_bullet' | 'enemy_bullet' | null
+export type ObjectType = keyof typeof OBJECTS
+
+export type Targets = ObjectType[]
 export interface Boundary {
     top: number
     bottom: number
+}
+
+export enum OBJECTS {
+    player = 'player',
+    enemy = 'enemy',
+    player_bullet = 'player_bullet',
+    enemy_bullet = 'enemy_bullet',
+    power_up = 'power_up'
 }
 
 export interface GameState {
@@ -44,6 +54,14 @@ export interface TextData {
     yPosition: number
     center: boolean
 }
+
+export const targets: Record<ObjectType, Targets> = {
+    player: [OBJECTS.enemy, OBJECTS.enemy_bullet],
+    enemy: [OBJECTS.player, OBJECTS.player_bullet],
+    player_bullet: [OBJECTS.enemy, OBJECTS.enemy_bullet],
+    enemy_bullet: [OBJECTS.player, OBJECTS.player_bullet],
+    power_up: [OBJECTS.player]
+} as const
 /** 
  * @returns x coordinate offset to 200 units from right side of the screen
  * and y coordinate offset to 100 units from the bottom of the screen

@@ -1,4 +1,4 @@
-import { Boundary, GameState, getRandom, getRandomWindowPosition, ObjectType } from "./utils";
+import { Boundary, GameState, getRandom, getRandomWindowPosition, OBJECTS, ObjectType, targets } from "./utils";
 
 export class GameObject {
     x: number
@@ -6,7 +6,7 @@ export class GameObject {
     sprite: HTMLImageElement
     collided = false
     outOfBounds = false
-    objectType: ObjectType = null
+    objectType: ObjectType
     targets: ObjectType[] = []
 
     constructor(x: number, y: number, spriteLink: string, objectType: ObjectType, targets: ObjectType[]) {
@@ -94,7 +94,8 @@ export class Ship extends GameObject {
 
     resetObject = (_canvas: HTMLCanvasElement) => {
         this.collided = false
-        this.health--
+        // disable for god mode
+        // this.health--
     }
 
     playCollusionSound = () => {
@@ -124,9 +125,22 @@ export class Ship extends GameObject {
 export class EnemyShip extends Ship {
     weaponCoolDownTime = getRandom(30,80)
     weaponsActivated = false
-    constructor(x: number, y: number, spriteLink: string, objectType: ObjectType, targets: ObjectType[], bulletSoundPath?: string, collusionSoundPath?: string, bulletSpriteLink?: string, weaponsActivated?: boolean) {
+    spawner: Spawner
+    constructor(
+        x: number, 
+        y: number, 
+        spriteLink: string, 
+        objectType: ObjectType, 
+        targets: ObjectType[], 
+        spawner: Spawner,
+        bulletSoundPath?: string, 
+        collusionSoundPath?: string, 
+        bulletSpriteLink?: string, 
+        weaponsActivated?: boolean
+    ) {
         super(x, y, spriteLink, objectType, targets, bulletSoundPath, collusionSoundPath, bulletSpriteLink)
         this.weaponsActivated = weaponsActivated || false
+        this.spawner = spawner
     }
 
     update = (canvas: HTMLCanvasElement, gameState: GameState) => {
@@ -151,7 +165,11 @@ export class EnemyShip extends Ship {
     addBullet = () => {
         if (this.bulletSpriteLink) {
             this.weaponCoolDownTime = 60
-            this.bullets.push(new Bullet(this.x + this.sprite.width/2, this.y + this.sprite.height, this.bulletSpriteLink, 'enemy_bullet', ['player']))
+            this.bullets.push(new Bullet(
+                this.x + this.sprite.width/2, 
+                this.y + this.sprite.height, 
+                this.bulletSpriteLink, 
+                OBJECTS.enemy_bullet, this.targets))
         }   else {
             throw console.error('!Cannot add bullets, bullet sprite path not set for ship object');
         }
@@ -168,6 +186,40 @@ export class EnemyShip extends Ship {
     resetObject = (canvas:HTMLCanvasElement) => {
         this.collided = false
         this.outOfBounds = false
+        const lucky = getRandom(0, 10) > 4
+        // if (lucky) {
+            this.spawner.spawnPowerUp(this.x, this.y)
+        // }
         this.setPosition(getRandomWindowPosition(canvas))
+    }
+}
+
+export class PowerUp extends GameObject {
+    constructor(x: number, y: number, spriteLink: string, objectType: ObjectType, targets: ObjectType[]) {
+        super (x, y, spriteLink, objectType, targets)
+    }
+
+    update() {
+        this.y += 0.01
+    }
+}
+
+export const powerUpLinks = {
+    0: './sprites/power_health.png',
+    1: './sprites/power_speed.png',
+    2: './sprites/power_weapon.png'
+}
+
+export class Spawner {
+    canvas: HTMLCanvasElement
+    powerUps: PowerUp[]
+    constructor(canvas: HTMLCanvasElement, powerUps: PowerUp[]) {
+        this.canvas = canvas
+        this.powerUps = powerUps
+    }
+
+    spawnPowerUp(x: number, y: number) {
+        const powerUpType = getRandom(0,2)
+        this.powerUps.push(new PowerUp(x,y, powerUpLinks[0], OBJECTS.power_up, targets.power_up))
     }
 }

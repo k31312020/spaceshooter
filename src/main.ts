@@ -1,6 +1,6 @@
-import { EnemyShip, Ship } from './ship'
+import { EnemyShip, PowerUp, Ship, Spawner } from './ship'
 import './style.css'
-import { GAMEOVER_MSG, NUMBER_OF_ENEMIES, updateCollusion, getRandomWindowPosition, getShipSpriteLink, DEFAULT_GAME_STATE, GameState, getRandom, toggleMenuVisibility, drawMessage, visibility } from './utils'
+import { GAMEOVER_MSG, NUMBER_OF_ENEMIES, updateCollusion, getRandomWindowPosition, getShipSpriteLink, DEFAULT_GAME_STATE, GameState, getRandom, toggleMenuVisibility, drawMessage, visibility, targets, OBJECTS } from './utils'
 import HEART from '/sprites/heart.png'
 import PLAYER_BULLET_SRC from '/sprites/bullet_1.png'
 import SHIP_DESTROY from '/sounds/explosion-6055.mp3'
@@ -40,13 +40,24 @@ canvas.width = window.innerWidth
 canvas.height = window.innerHeight
 //  Initialize canvas end
 
+let powerUps: PowerUp[] = []
 // list to store enemies
 let enemies: EnemyShip[] = []
 // player object
 let player: Ship
 
+const spawner = new Spawner(canvas, powerUps)
+
 const initializePlayer = () => {
-  player = new Ship(canvas.width / 2, canvas.height*0.9, getShipSpriteLink(0), 'player', ['enemy', 'enemy_bullet'], BULLET_SOUND, SHIP_DESTROY, PLAYER_BULLET_SRC)
+  player = new Ship(
+    canvas.width / 2, 
+    canvas.height*0.9,
+    getShipSpriteLink(0), 
+    OBJECTS.player, targets.player, 
+    BULLET_SOUND, 
+    SHIP_DESTROY, 
+    PLAYER_BULLET_SRC
+  )
 }
 
 const initailizeGame = () => {
@@ -147,7 +158,17 @@ const initializeEmemyShips = (amount: number) => {
   for (let i = 0; i < amount; i++) {
     const { x, y } = getRandomWindowPosition(canvas)
     const enemySpriteIndex = getRandom(1, 5)
-    enemies.push(new EnemyShip(x, y, getShipSpriteLink(enemySpriteIndex), 'enemy', ['player', 'player_bullet'], BULLET_SOUND, SHIP_DESTROY, PLAYER_BULLET_SRC, enemySpriteIndex === 4))
+    enemies.push(new EnemyShip(
+      x, y, 
+      getShipSpriteLink(enemySpriteIndex), 
+      OBJECTS.enemy, 
+      targets.enemy,
+      spawner,
+      BULLET_SOUND, 
+      SHIP_DESTROY, 
+      PLAYER_BULLET_SRC, 
+      enemySpriteIndex === 4
+    ))
   }
 }
 
@@ -206,7 +227,8 @@ const render = () => {
   const gameObjects = [
     ...enemies, player,
     ...player.bullets,
-    ...enemies.flatMap(e => e.weaponsActivated ? e.bullets : [])
+    ...enemies.flatMap(e => e.weaponsActivated ? e.bullets : []),
+    ...powerUps
   ]
   for (let i = 0; i < gameObjects.length; i++) {
     gameObjects[i].render(ctx!)
@@ -222,11 +244,17 @@ const increseEnemySpeed = () => {
 }
 
 const updateValues = () => {
+  // powerUps = powerUps.filter(power => power.outOfBounds)
+  console.log(powerUps.length)
   const gameObjects = [
     ...enemies, player,
     ...player.bullets,
-    ...enemies.flatMap(e => e.weaponsActivated ? e.bullets : [])
+    ...enemies.flatMap(e => e.weaponsActivated ? e.bullets : []),
+    ...powerUps
   ]
+  for (let i=0; i<powerUps.length; i++) {
+    powerUps[i].update()
+  }
   updateCollusion(gameObjects, canvas)
   updateEnemies()
   increseEnemySpeed()
