@@ -1,4 +1,4 @@
-import { EnemyShip, PowerUp, Ship, Spawner } from './ship'
+import { EnemyShip, Ship, Spawner } from './ship'
 import './style.css'
 import { GAMEOVER_MSG, NUMBER_OF_ENEMIES, updateCollusion, getRandomWindowPosition, getShipSpriteLink, DEFAULT_GAME_STATE, GameState, getRandom, toggleMenuVisibility, drawMessage, visibility, targets, OBJECTS } from './utils'
 import HEART from '/sprites/heart.png'

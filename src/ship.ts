@@ -143,7 +143,7 @@ export class Ship extends GameObject {
         }
     }
 
-    updateBullets = (bulletSpeed: number) => {
+    updateBullets = () => {
         // remove bullets which have collided and are out of bounds
         this.bullets = this.bullets.filter(bullet => !bullet.collided && !bullet.outOfBounds)
         for (let i = 0; i < this.bullets.length; i++) {
