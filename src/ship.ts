@@ -41,6 +41,8 @@ export class GameObject {
 }
 
 export class Bullet extends GameObject {
+    horizontalStep = 0
+    verticalStep = -20
     constructor(x: number, y: number, spriteLink: string, objectType: ObjectType, targets: ObjectType[]) {
         super(x, y, spriteLink, objectType, targets)
     }
@@ -49,11 +51,12 @@ export class Bullet extends GameObject {
 export class Ship extends GameObject {
     hit: boolean = false
     destroyAnimation = 0
-    bullets: GameObject[] = []
+    bullets: Bullet[] = []
     bulletSpriteLink: string | undefined
     bulletSoundPath: string | undefined
     collusionSoundPath: string | undefined
     health: number = 3
+    shootMode: number = 1
 
     constructor(x: number, y: number, spriteLink: string, objectType: ObjectType, targets: ObjectType[], bulletSoundPath?: string, collusionSoundPath?: string, bulletSpriteLink?: string) {
         super(x, y, spriteLink, objectType, targets)
@@ -72,7 +75,33 @@ export class Ship extends GameObject {
             throw console.error('!Cannot play sound, bullet sound path not set for ship object');
         }
         if (this.bulletSpriteLink) {
-            this.bullets.push(new Bullet(this.x + this.sprite.width/2, this.y, this.bulletSpriteLink, 'player_bullet', ['enemy']))
+            if (this.shootMode === 1) {
+                this.bullets.push(new Bullet(
+                    this.x + this.sprite.width/2, 
+                    this.y, 
+                    this.bulletSpriteLink, 
+                    'player_bullet', 
+                    ['enemy']
+                ))
+            } else {
+                const bulletOne =  new Bullet(
+                    this.x + this.sprite.width * 3/4, 
+                    this.y, 
+                    this.bulletSpriteLink, 
+                    'player_bullet', 
+                    ['enemy']
+                )
+                const bulletTwo =  new Bullet(
+                    this.x + this.sprite.width * 1/4, 
+                    this.y, 
+                    this.bulletSpriteLink, 
+                    'player_bullet', 
+                    ['enemy']
+                )
+                bulletOne.horizontalStep = 0.03*20
+                bulletTwo.horizontalStep = -0.03*20
+                this.bullets.push(bulletOne, bulletTwo)
+            }
         }   else {
             throw console.error('!Cannot add bullets, bullet sprite path not set for ship object');
         }
@@ -94,8 +123,13 @@ export class Ship extends GameObject {
 
     resetObject = (_canvas: HTMLCanvasElement) => {
         this.collided = false
-        // disable for god mode
-        // this.health--
+        this.health--
+    }
+
+    increaseHealth() {
+        if (this.health < 3) {
+            this.health++
+        }
     }
 
     playCollusionSound = () => {
@@ -113,7 +147,8 @@ export class Ship extends GameObject {
         // remove bullets which have collided and are out of bounds
         this.bullets = this.bullets.filter(bullet => !bullet.collided && !bullet.outOfBounds)
         for (let i = 0; i < this.bullets.length; i++) {
-            this.bullets[i].y -= bulletSpeed
+            this.bullets[i].y += this.bullets[i].verticalStep
+            this.bullets[i].x += this.bullets[i].horizontalStep
         }
     }
 
@@ -124,6 +159,7 @@ export class Ship extends GameObject {
 
 export class EnemyShip extends Ship {
     weaponCoolDownTime = getRandom(30,80)
+    speed = 1
     weaponsActivated = false
     spawner: Spawner
     constructor(
@@ -144,14 +180,14 @@ export class EnemyShip extends Ship {
     }
 
     update = (canvas: HTMLCanvasElement, gameState: GameState) => {
-        this.y += gameState.enemySpeed
+        this.y += this.speed
         this.weaponCoolDownTime--
         if (this.outOfBounds) {
             this.resetObject(canvas)
         }
         if (this.collided) {
-            // increase game score
             gameState.score++
+            this.spawnPowerUp()
             this.handleCollusion(canvas)
         }
         if (this.weaponCoolDownTime === 0 && this.weaponsActivated) {
@@ -159,6 +195,13 @@ export class EnemyShip extends Ship {
         }
         if (this.bullets.length) {
             this.updateBullets(gameState.bulletSpeed)
+        }
+    }
+
+    spawnPowerUp() {
+        const lucky = getRandom(0, 10) > 6
+        if (!this.outOfBounds && lucky) {
+            this.spawner.spawnPowerUp(this.x, this.y)
         }
     }
 
@@ -183,43 +226,86 @@ export class EnemyShip extends Ship {
         }
     }
 
+
     resetObject = (canvas:HTMLCanvasElement) => {
         this.collided = false
         this.outOfBounds = false
-        const lucky = getRandom(0, 10) > 4
-        // if (lucky) {
-            this.spawner.spawnPowerUp(this.x, this.y)
-        // }
+        this.speed = getRandom(1.5, 3, true)
         this.setPosition(getRandomWindowPosition(canvas))
     }
 }
 
 export class PowerUp extends GameObject {
-    constructor(x: number, y: number, spriteLink: string, objectType: ObjectType, targets: ObjectType[]) {
+    type:number
+    powerUpUsed = false
+    collusionSoundPath: string | undefined
+    constructor(x: number, y: number, spriteLink: string, objectType: ObjectType, targets: ObjectType[], type: number, collusionSoundPath: string) {
         super (x, y, spriteLink, objectType, targets)
+        this.type = type
+        this.collusionSoundPath = collusionSoundPath
     }
 
-    update() {
-        this.y += 0.01
+    playCollusionSound = () => {
+        if (this.collusionSoundPath) {
+            const sound = new Audio(this.collusionSoundPath) 
+            sound.play()
+            sound.remove()
+        } else {
+            throw console.error('!Cannot play sound, collusion sound path not set for ship object');
+        }
+    }
+
+    update(gameState: GameState, player: Ship) {
+        this.y += gameState.enemySpeed
+        if (this.collided) {
+            this.addPowerUp(gameState, player)
+            this.handleCollusion()
+        }
+    }
+
+    handleCollusion() {
+        this.playCollusionSound()
+        this.resetObject()
+    }
+
+    addPowerUp(gameState: GameState, player: Ship) {
+        if (!this.powerUpUsed) {
+            switch(this.type) {
+                case 0: 
+                    player.increaseHealth()
+                    break
+                case 1: 
+                    gameState.score += 5
+                    break
+                case 2: player.shootMode = 2
+                    break
+                default:
+            }
+        }
+        this.powerUpUsed = true
+    }
+
+    resetObject() {
+        this.sprite.remove()
     }
 }
 
-export const powerUpLinks = {
-    0: './sprites/power_health.png',
-    1: './sprites/power_speed.png',
-    2: './sprites/power_weapon.png'
-}
+export const powerUpLinks = ['./sprites/power_health.png', './sprites/power_points.png', './sprites/power_weapon.png']
 
 export class Spawner {
     canvas: HTMLCanvasElement
-    powerUps: PowerUp[]
-    constructor(canvas: HTMLCanvasElement, powerUps: PowerUp[]) {
+    powerUps: PowerUp[] = []
+    constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas
-        this.powerUps = powerUps
+    }
+
+    cleanPowerUps() {
+        this.powerUps = this.powerUps.filter(pup => !pup.outOfBounds && !pup.powerUpUsed)
     }
 
     spawnPowerUp(x: number, y: number) {
-        const powerUpType = getRandom(0,2)
-        this.powerUps.push(new PowerUp(x,y, powerUpLinks[0], OBJECTS.power_up, targets.power_up))
+        const random = getRandom(0,31)
+        const powerUpType = (random > 0 && random < 30) ? 1 : random === 30 ? 2 : random
+        this.powerUps.push(new PowerUp(x,y, powerUpLinks[powerUpType], OBJECTS.power_up, targets.power_up, powerUpType, '/sounds/beep.mp3'))
     }
 }

@@ -96,8 +96,8 @@ export const updateCollusion = (gameObjects: GameObject[], canvas: HTMLCanvasEle
     }
 }
 
-export const getRandom = (min: number, max: number) => {
-    return min + Math.floor(Math.random() * max)
+export const getRandom = (min: number, max: number, decimal = false) => {
+    return decimal ? min + (Math.random() * max) : min + Math.floor(Math.random() * max)
 }
 
 export const toggleMenuVisibility = (selector: string, visibilityValue: string) => {

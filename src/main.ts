@@ -40,13 +40,12 @@ canvas.width = window.innerWidth
 canvas.height = window.innerHeight
 //  Initialize canvas end
 
-let powerUps: PowerUp[] = []
 // list to store enemies
 let enemies: EnemyShip[] = []
 // player object
 let player: Ship
 
-const spawner = new Spawner(canvas, powerUps)
+const spawner = new Spawner(canvas)
 
 const initializePlayer = () => {
   player = new Ship(
@@ -158,7 +157,7 @@ const initializeEmemyShips = (amount: number) => {
   for (let i = 0; i < amount; i++) {
     const { x, y } = getRandomWindowPosition(canvas)
     const enemySpriteIndex = getRandom(1, 5)
-    enemies.push(new EnemyShip(
+    const enemy = new EnemyShip(
       x, y, 
       getShipSpriteLink(enemySpriteIndex), 
       OBJECTS.enemy, 
@@ -168,7 +167,9 @@ const initializeEmemyShips = (amount: number) => {
       SHIP_DESTROY, 
       PLAYER_BULLET_SRC, 
       enemySpriteIndex === 4
-    ))
+    )
+    enemy.speed = getRandom(1.5,3, true)
+    enemies.push(enemy)
   }
 }
 
@@ -181,7 +182,7 @@ const updateEnemies = () => {
 const drawHUD = () => {
   drawScore()
   if (player.health > 0) {
-    updateHealth()
+    drawHealth()
   } else {
     gameState.gameInSession = false
     displayGameoverMsg()
@@ -200,7 +201,7 @@ const displayGameoverMsg = () => {
   setTimeout(() => endGame(), 3000)
 }
 
-const updateHealth = () => {
+const drawHealth = () => {
   for (let i = 1; i <= player.health; i++) {
     ctx!.drawImage(heartImg, canvas.width - i * 50, canvas.height * 0.06)
   }
@@ -228,7 +229,7 @@ const render = () => {
     ...enemies, player,
     ...player.bullets,
     ...enemies.flatMap(e => e.weaponsActivated ? e.bullets : []),
-    ...powerUps
+    ...spawner.powerUps
   ]
   for (let i = 0; i < gameObjects.length; i++) {
     gameObjects[i].render(ctx!)
@@ -244,16 +245,15 @@ const increseEnemySpeed = () => {
 }
 
 const updateValues = () => {
-  // powerUps = powerUps.filter(power => power.outOfBounds)
-  console.log(powerUps.length)
+  spawner.cleanPowerUps()
   const gameObjects = [
     ...enemies, player,
     ...player.bullets,
     ...enemies.flatMap(e => e.weaponsActivated ? e.bullets : []),
-    ...powerUps
+    ...spawner.powerUps
   ]
-  for (let i=0; i<powerUps.length; i++) {
-    powerUps[i].update()
+  for (let i=0; i<spawner.powerUps.length; i++) {
+    spawner.powerUps[i].update(gameState, player)
   }
   updateCollusion(gameObjects, canvas)
   updateEnemies()
