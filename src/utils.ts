@@ -1,67 +1,5 @@
-import { GameObject } from "./ship"
-
-export const NUMBER_OF_ENEMIES = 14
-
-export const MAX_HEALTH = 3
-
-export const GAMEOVER_MSG = "GAMEOVER"
-
-export type ObjectType = keyof typeof OBJECTS
-
-export type Targets = ObjectType[]
-export interface Boundary {
-    top: number
-    bottom: number
-}
-
-export enum OBJECTS {
-    player = 'player',
-    enemy = 'enemy',
-    player_bullet = 'player_bullet',
-    enemy_bullet = 'enemy_bullet',
-    power_up = 'power_up'
-}
-
-export interface GameState {
-    score: number,
-    health: number,
-    enemySpeed: number,
-    bulletSpeed: number,
-    gameInSession: boolean,
-    gameOver: boolean,
-    fps: number,
-    menuPosition: number,
-    paused: boolean
-}
-
-export const DEFAULT_GAME_STATE: GameState = {
-    score: 0,
-    health: MAX_HEALTH,
-    enemySpeed: 1,
-    bulletSpeed: 20,
-    gameInSession: false,
-    gameOver: false,
-    fps: 60,
-    menuPosition: 0,
-    paused: false
-} as const
-
-export interface TextData {
-    fillStyle: string
-    font: string
-    message: string
-    xPosition: number
-    yPosition: number
-    center: boolean
-}
-
-export const targets: Record<ObjectType, Targets> = {
-    player: [OBJECTS.enemy, OBJECTS.enemy_bullet],
-    enemy: [OBJECTS.player, OBJECTS.player_bullet],
-    player_bullet: [OBJECTS.enemy, OBJECTS.enemy_bullet],
-    enemy_bullet: [OBJECTS.player, OBJECTS.player_bullet],
-    power_up: [OBJECTS.player]
-} as const
+import { GameObject } from "./game_object"
+import { Boundary, TextData } from "./types"
 /** 
  * @returns x coordinate offset to 200 units from right side of the screen
  * and y coordinate offset to 100 units from the bottom of the screen
@@ -109,7 +47,7 @@ export const drawMessage = (ctx: CanvasRenderingContext2D, textData: TextData) =
     ctx.fillStyle = textData.fillStyle
     ctx.font = textData.font
     const textWidth = ctx!.measureText(textData.message).width
-    ctx!.fillText(
+    ctx.fillText(
         textData.message,
         textData.xPosition - (textData.center ? textWidth / 2 : 0),
         textData.yPosition)
